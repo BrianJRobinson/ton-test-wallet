@@ -24,9 +24,8 @@ export default function Home() {
 
   useEffect(() => {
     const checkWalletConnection = async () => {
-      tonConnectUi.account?.address ?
-        handleWallectConnection(tonConnectUi.account?.address) :
-        handleWalletDisconnection()
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      tonConnectUi.account?.address ? handleWallectConnection(tonConnectUi.account?.address) : handleWalletDisconnection();
     }
 
     checkWalletConnection();
