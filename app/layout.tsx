@@ -16,7 +16,7 @@ export default function RootLayout({
         <title>TON Connect Test</title>
       </head>
       <body>
-        <TonConnectUIProvider manifestUrl="https://degen-defi.com/nft_images/tonconnect-manifest.json">
+        <TonConnectUIProvider manifestUrl="https://ton-test-wallet.vercel.app/tonconnect-manifest.json">
           {children}
         </TonConnectUIProvider>
       </body>
