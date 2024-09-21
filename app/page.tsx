@@ -28,6 +28,7 @@ export default function Home() {
       tonConnectUi.account?.address ? handleWallectConnection(tonConnectUi.account?.address) : handleWalletDisconnection();
     }
 
+    // just a comment
     checkWalletConnection();
 
     const unsubscribe = tonConnectUi.onStatusChange((wallet) => {
