@@ -1,14 +1,25 @@
-
 'use client'
 
-import { Address } from "@ton/core";
+import { address, Address } from "@ton/core";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 import { useState, useCallback, useEffect } from "react";
+import { WebApp } from '@twa-dev/types';
+
+declare global {
+  interface Window {
+    Telegram?: {
+      WebApp: WebApp
+    }
+  }
+}
 
 export default function Home() {
   const [tonConnectUi] = useTonConnectUI();
   const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const [error, setError] = useState<any>(null);
+  const [notification, setNotification] = useState('');
 
   const handleWallectConnection = useCallback((address: string) => {
     setTonWalletAddress(address);
@@ -23,6 +34,40 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+      const tg = window.Telegram.WebApp
+      tg.ready()
+
+
+      const initData = tg.initData || '';
+      const initDataUnsafe = tg.initDataUnsafe || '';
+
+      if (initDataUnsafe.user) {
+        fetch('/api/user', {
+          method: 'POST',
+          headers: {
+            'Content-Type' : 'application/json',
+          },
+          body: JSON.stringify(initDataUnsafe.user),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            setError(data.Error);
+          } else {
+            setUser(data);
+          }
+        })
+        .catch((err) => {
+          setError('Failed to fetch user data');
+        })
+      } else {
+        setError('No User data available');
+      }
+    } else {
+      setError('This app needs to be opened in Telegram');
+    }
+
     const checkWalletConnection = async () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       tonConnectUi.account?.address ? handleWallectConnection(tonConnectUi.account?.address) : handleWalletDisconnection();
@@ -45,6 +90,29 @@ export default function Home() {
     }
   }, [tonConnectUi, handleWallectConnection, handleWalletDisconnection]);
 
+  const handleIncreasePoints = async () => {
+    if (!user) return;
+
+    try {
+      const res = await fetch('/api/increase-points', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify( { telegramId: user.telegramId }),
+      })
+      const data = await res.json()
+      if ( data.success) {
+        setUser({...user, points: data.points });
+        setNotification('Points increased successfully');
+        setTimeout(() => setNotification(''), 3000)
+      } else {
+        setError('Failed to increase points');
+      }
+    } catch (err) {
+      setError('An error occurred while increasing points');
+    }
+  }
   const handleWalletAction = async () => {
     console.log("Button Clicked");
     if (tonConnectUi.connected)
@@ -74,28 +142,54 @@ export default function Home() {
     )
   }
 
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold mb-8">TON Connect Demo</h1>
-      {tonWalletAddress ? (
-        <div className="flex flex-col item-center">
-          <p className="mb-4">Connected: {formatAddress(tonWalletAddress)}</p>
+  if (!tonWalletAddress) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center">
+        <h1 className="text-4xl font-bold mb-8">TON Connect Demo</h1>
+        {tonWalletAddress ? (
+          <div className="flex flex-col item-center">
+            <p className="mb-4">Connected: {formatAddress(tonWalletAddress)}</p>
+            <button
+              onClick={handleWalletAction}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Disconnect Wallet
+              </button>
+          </div>
+        ) : (
           <button
             onClick={handleWalletAction}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Disconnect Wallet
-            </button>
-        </div>
-      ) : (
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Connect TON Wallet
+          </button>
+        )}
+      </main>
+    );
+  } else {
+    if (error) {
+      return <div className="contiainer mx-auto p-4 text-red-500">{error}</div>
+    }
+
+    if (!user) return <div className="container mx-auto p-4">Loading...</div>
+
+    return (
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Welcome, {user.firstName}!</h1>
+        <p>Your current points: {user.points}</p>
         <button
-          onClick={handleWalletAction}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={handleIncreasePoints}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
         >
-          Connect TON Wallet
-        </button>
-      )}
-    </main>
-  );
+          Increase Points
+        </button> 
+        {notification && (
+          <div className="mt-4 p-2 2bg-green-100 text-green-700 rounded">
+            {notification}
+          </div>
+        )}
+      </div>
+    )
+  }
 
 }
