@@ -67,7 +67,7 @@ export default function Home() {
         setError('No User data available');
       }
     } else {
-      setError('This app needs to be opened in Telegram');
+      setError(`This app needs to be opened in Telegram ${typeof window}`);
     }
 
     const checkWalletConnection = async () => {
