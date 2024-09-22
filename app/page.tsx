@@ -1,6 +1,6 @@
 'use client'
 
-import { address, Address } from "@ton/core";
+import { Address } from "@ton/core";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 import { useState, useCallback, useEffect } from "react";
 import { WebApp } from '@twa-dev/types';
@@ -17,7 +17,9 @@ export default function Home() {
   const [tonConnectUi] = useTonConnectUI();
   const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const [user, setUser] = useState<any>(null);
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const [error, setError] = useState<any>(null);
   const [notification, setNotification] = useState('');
 
@@ -39,7 +41,7 @@ export default function Home() {
       tg.ready()
 
 
-      const initData = tg.initData || '';
+      //const initData = tg.initData || '';
       const initDataUnsafe = tg.initDataUnsafe || '';
 
       if (initDataUnsafe.user) {
@@ -59,7 +61,7 @@ export default function Home() {
           }
         })
         .catch((err) => {
-          setError('Failed to fetch user data');
+          setError(`Failed to fetch user data: ${err} `);
         })
       } else {
         setError('No User data available');
@@ -110,7 +112,7 @@ export default function Home() {
         setError('Failed to increase points');
       }
     } catch (err) {
-      setError('An error occurred while increasing points');
+      setError(`An error occurred while increasing points: ${err}`);
     }
   }
   const handleWalletAction = async () => {
