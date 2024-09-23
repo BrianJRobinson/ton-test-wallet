@@ -147,7 +147,7 @@ export default function Home() {
         <h1 className="text-4xl font-bold mb-8">TON Connect Demo</h1>
         <p> Current User: {tgUser?.id} : {tgUser?.username} </p>
         <p>Errors: {error}</p>
-        <p>tgUser:  {JSON.stringify(user)}</p>
+        <p>tgUser:  {JSON.stringify(tgUser)}</p>
         {tonWalletAddress ? (
           <div className="flex flex-col item-center">
             <p className="mb-4">Connected: {formatAddress(tonWalletAddress)}</p>
