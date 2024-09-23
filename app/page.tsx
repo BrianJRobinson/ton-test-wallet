@@ -38,19 +38,16 @@ export default function Home() {
     setIsLoading(false);
   }, []);
 
-  setUser({"telegramId" : "x12345", "username" : "cryptowinner", "first_name" : "gggg", "last_name" : "hhh"});
-
   useEffect(() => {
 
-    //if (typeof window !== 'undefined' && webApp) {
-
-      if (user) {
+    if (typeof window !== 'undefined' && webApp) {
+      if (tgUser) {
         fetch('/api/user', {
           method: 'POST',
           headers: {
             'Content-Type' : 'application/json',
           },
-          body: JSON.stringify(user),
+          body: JSON.stringify(tgUser),
         })
         .then((res) => res.json())
         .then((data) => {
@@ -68,9 +65,9 @@ export default function Home() {
       } else {
         setError('No User data available');
       }
-   //} else {
-   //  setError(`This app needs to be opened in Telegram ${JSON.stringify(typeof window)}`);
-   // }
+    } else {
+     setError(`This app needs to be opened in Telegram`);
+    }
 
     const checkWalletConnection = async () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
