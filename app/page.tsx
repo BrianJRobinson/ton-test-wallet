@@ -99,7 +99,7 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify( { tgUser }),
-      })
+      })      
       const data = await res.json()
       if ( data.success) {
         setUser({...user, points: data.points });
