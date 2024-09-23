@@ -90,7 +90,7 @@ export default function Home() {
   }, [tonConnectUi, handleWallectConnection, handleWalletDisconnection, tgUser, user, webApp]);
 
   const handleIncreasePoints = async () => {
-    if (!user) return;
+    if (!tgUser) return;
 
     try {
       const res = await fetch('/api/increase-points', {
@@ -98,7 +98,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify( { telegramId: user.telegramId }),
+        body: JSON.stringify( { tgUser }),
       })
       const data = await res.json()
       if ( data.success) {
