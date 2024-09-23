@@ -145,6 +145,7 @@ export default function Home() {
     return (
       <main className="flex min-h-screen flex-col items-center justify-center">
         <h1 className="text-4xl font-bold mb-8">TON Connect Demo</h1>
+        <p> Current User: {tgUser?.id} : {tgUser?.username}</p>
         {tonWalletAddress ? (
           <div className="flex flex-col item-center">
             <p className="mb-4">Connected: {formatAddress(tonWalletAddress)}</p>
