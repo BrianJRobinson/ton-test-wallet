@@ -68,9 +68,9 @@ export default function Home() {
       } else {
         setError('No User data available');
       }
-    //} else {
-    //  setError(`This app needs to be opened in Telegram ${JSON.stringify(typeof window)}`);
-   // }
+    } else {
+     setError(`This app needs to be opened in Telegram ${JSON.stringify(typeof window)}`);
+    }
 
     const checkWalletConnection = async () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
