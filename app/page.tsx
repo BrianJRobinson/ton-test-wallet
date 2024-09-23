@@ -4,6 +4,7 @@ import { Address } from "@ton/core";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 import { useState, useCallback, useEffect } from "react";
 import { WebApp } from '@twa-dev/types';
+import { useTelegram } from "./TelegramProvider";
 
 declare global {
   interface Window {
@@ -14,6 +15,7 @@ declare global {
 }
 
 export default function Home() {
+  const { user: tgUser, webApp } = useTelegram();
   const [tonConnectUi] = useTonConnectUI();
   const [tonWalletAddress, setTonWalletAddress] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,21 +38,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp
-      tg.ready()
 
+    if (typeof window !== 'undefined' && webApp) {
 
-      //const initData = tg.initData || '';
-      const initDataUnsafe = tg.initDataUnsafe || '';
-
-      if (initDataUnsafe.user) {
+      if (tgUser) {
         fetch('/api/user', {
           method: 'POST',
           headers: {
             'Content-Type' : 'application/json',
           },
-          body: JSON.stringify(initDataUnsafe.user),
+          body: JSON.stringify(user),
         })
         .then((res) => res.json())
         .then((data) => {
@@ -67,7 +64,7 @@ export default function Home() {
         setError('No User data available');
       }
     } else {
-      setError(`This app needs to be opened in Telegram ${typeof window}`);
+      setError(`This app needs to be opened in Telegram ${JSON.stringify(typeof window)}`);
     }
 
     const checkWalletConnection = async () => {
@@ -90,7 +87,7 @@ export default function Home() {
     return () => {
       unsubscribe();
     }
-  }, [tonConnectUi, handleWallectConnection, handleWalletDisconnection]);
+  }, [tonConnectUi, handleWallectConnection, handleWalletDisconnection, tgUser, user, webApp]);
 
   const handleIncreasePoints = async () => {
     if (!user) return;
