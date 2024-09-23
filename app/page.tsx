@@ -56,7 +56,8 @@ export default function Home() {
             setError(data.Error);
             setExtraInfo(data.Error);
           } else {
-            setUser(data);
+            setUser(data.user);
+            setExtraInfo(data.extra)
           }
         })
         .catch((err) => {
