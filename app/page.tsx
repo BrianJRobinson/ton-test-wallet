@@ -135,7 +135,7 @@ export default function Home() {
     return (
       <main className="flex min-h-screen flex-col items-center justift-center">
         <div className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded">
-          Loading...
+          {JSON.stringify(user)}
         </div>
       </main>
     )
